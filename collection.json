@@ -1,0 +1,1139 @@
+{
+	"info": {
+		"_postman_id": "32b0af10-9a46-436d-9b76-19d3570f3dcb",
+		"name": "App_Empresas_Incrementada",
+		"description": "Collection incrementada com métodos de criação, remoção e atualização de dados para interagir com a API desenvolvida",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Sign_in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "21bac370-078c-4948-a957-27e823905e9d",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}",
+								"disabled": true
+							},
+							{
+								"key": "client",
+								"value": "{{client}}",
+								"disabled": true
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\" : \"testeapple@ioasys.com.br\",\n  \"password\" : \"12341234\"\n}"
+						},
+						"url": {
+							"raw": "{{command_host}}/api/auth/{{api_version}}/sign_in/",
+							"host": [
+								"{{command_host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"{{api_version}}",
+								"sign_in",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Enterprise",
+			"item": [
+				{
+					"name": "Enterprise Index",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fec59177-31a3-4967-9a25-9c377577f247",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/enterprises/",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"enterprises",
+								""
+							]
+						},
+						"description": "Lista de enterprise_types:\n- [enterprise_type_code, name]\n- [1, \"Agro\"]\n- [2, \"Aviation\"]\n- [3, \"Biotech\"]\n- [4, \"Eco\"]\n- [5, \"Ecommerce\"]\n- [6, \"Education\"]\n- [7, \"Fashion\"]\n- [8, \"Fintech\"]\n- [9, \"Food\"]\n- [10, \"Games\"]\n- [11, \"Health\"]\n- [12, \"IOT\"]\n- [13, \"Logistics\"]\n- [14, \"Media\"]\n- [15, \"Mining\"]\n- [16, \"Products\"]\n- [17, \"Real Estate\"]\n- [18, \"Service\"]\n- [19, \"Smart City\"]\n- [20, \"Social\"]\n- [21, \"Software\"]\n- [22, \"Technology\"]\n- [23, \"Tourism\"]\n- [24, \"Transport\"]"
+					},
+					"response": []
+				},
+				{
+					"name": "Enterprises Index with Filter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1e0ba09a-8118-4fa6-804d-e7ad97af0b5d",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/enterprises?enterprise_types=53",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"enterprises"
+							],
+							"query": [
+								{
+									"key": "enterprise_types",
+									"value": "53"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "935b36e2-18e4-4107-8564-3a217c671de8",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/enterprises/1",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"enterprises",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Enterprise",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2530fe5-a870-41c3-bada-781e945a4867",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"enterprise_name\": \"cqrs teste create\",\r\n  \"description\": \"lorem description for cqrs test\",\r\n  \"value\": 55000,\r\n  \"city\": \"bh\",\r\n  \"country\": \"brazil\",\r\n  \"enterprise_type_id\": 6,\r\n  \"email_enterprise\": \"icaro-stuart@techhero.com\"\r\n}"
+						},
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/enterprises/",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"enterprises",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Enterprise",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2530fe5-a870-41c3-bada-781e945a4867",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 7,\r\n  \"enterprise_name\": \"ist tech\",\r\n  \"description\": \"lorem descript\",\r\n  \"value\": 150530,\r\n  \"city\": \"aracaju \",\r\n  \"country\": \"brazil\",\r\n  \"enterprise_type_id\": 1,\r\n  \"email_enterprise\": \"ist@techhero.com\",\r\n  \"facebook\": null,\r\n  \"twitter\": \"@icarotorres_stu\",\r\n  \"linkedin\": \"https://www.linkedin.com/in/icarotorres-stuart/\",\r\n  \"phone\": \"+5579991293792\",\r\n  \"own_enterprise\": true,\r\n  \"photo\": null,\r\n  \"shares\": 0,\r\n  \"share_price\": 0,\r\n  \"own_shares\": 0\r\n}"
+						},
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/enterprises/7",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"enterprises",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Enterprise",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2530fe5-a870-41c3-bada-781e945a4867",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/enterprises/10008",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"enterprises",
+								"10008"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Investors",
+			"item": [
+				{
+					"name": "Investor Index",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e127f89c-e1ba-4dbd-a7fa-69e2cb395c18",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/investors",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"investors"
+							]
+						},
+						"description": "Lista de enterprise_types:\n- [enterprise_type_code, name]\n- [1, \"Agro\"]\n- [2, \"Aviation\"]\n- [3, \"Biotech\"]\n- [4, \"Eco\"]\n- [5, \"Ecommerce\"]\n- [6, \"Education\"]\n- [7, \"Fashion\"]\n- [8, \"Fintech\"]\n- [9, \"Food\"]\n- [10, \"Games\"]\n- [11, \"Health\"]\n- [12, \"IOT\"]\n- [13, \"Logistics\"]\n- [14, \"Media\"]\n- [15, \"Mining\"]\n- [16, \"Products\"]\n- [17, \"Real Estate\"]\n- [18, \"Service\"]\n- [19, \"Smart City\"]\n- [20, \"Social\"]\n- [21, \"Software\"]\n- [22, \"Technology\"]\n- [23, \"Tourism\"]\n- [24, \"Transport\"]"
+					},
+					"response": []
+				},
+				{
+					"name": "Investors Index with Filter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "630f2870-7326-4197-99f6-c3144b9cc94f",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/investors?name=brand new one",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"investors"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "brand new one"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "935b36e2-18e4-4107-8564-3a217c671de8",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/investors/2",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"investors",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Investor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2530fe5-a870-41c3-bada-781e945a4867",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"investor_name\": \"created to be deactivated\",\r\n  \"investor_email\": \"deactivated@testinvestor.net\",\r\n  \"photo\": null,\r\n  \"super_angel\": false,\r\n  \"balance\": 0,\r\n  \"city\": \"BH\",\r\n  \"country\": \"Brasil\",\r\n  \"enterprise_id\": null,\r\n  \"portfolio\": []\r\n}"
+						},
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/investors",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"investors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Investor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2530fe5-a870-41c3-bada-781e945a4867",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n\t{\r\n\t\t\"op\": \"replace\",\r\n\t\t\"path\": \"investor_name\",\r\n\t\t\"value\": \"Some patched name\"\r\n\t},\r\n\t{\r\n\t\t\"op\": \"replace\",\r\n\t\t\"path\": \"investor_email/address\",\r\n\t\t\"value\": \"brandnewone@testpatch.net\"\r\n\t},\r\n\t{\r\n\t\t\"op\": \"replace\",\r\n\t\t\"path\": \"investor_name\",\r\n\t\t\"value\": \"Some patched name\"\r\n\t},\r\n\t{\r\n\t\t\"op\": \"replace\",\r\n\t\t\"path\": \"balance\",\r\n\t\t\"value\": 500000\r\n\t},\r\n\t{\r\n\t\t\"op\": \"replace\",\r\n\t\t\"path\": \"location\",\r\n\t\t\"value\": {\r\n\t\t\t\"city\": \"Amsterdam\",\r\n\t\t\t\"country\": \"Netherlands\"\r\n\t\t}\r\n\t},\r\n\t{\r\n\t\t\"op\": \"add\",\r\n\t\t\"path\": \"investors_enterprises/-\",\r\n\t\t\"value\": {\r\n\t\t\t\"enterprise_id\": 1,\r\n\t\t\t\"investor_id\": 1\r\n\t\t}\r\n\t},\r\n\t{\r\n\t\t\"op\": \"replace\",\r\n\t\t\"path\": \"super_angel\",\r\n\t\t\"value\": true\r\n\t}\r\n]"
+						},
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/investors/1",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"investors",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Overwrite Investor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2530fe5-a870-41c3-bada-781e945a4867",
+								"exec": [
+									"if (responseCode.code === 200)",
+									"{",
+									"    postman.setEnvironmentVariable(\"access-token\", postman.getResponseHeader('access-token'));",
+									"    postman.setEnvironmentVariable(\"client\", postman.getResponseHeader('client'));",
+									"    postman.setEnvironmentVariable(\"uid\", postman.getResponseHeader('uid'));",
+									"}",
+									"",
+									"var responseJSON;",
+									"",
+									"try { responseJSON = JSON.parse(responseBody); }",
+									"catch (e) { }",
+									"",
+									"",
+									"if ('id' in responseJSON)",
+									"{",
+									"    postman.setEnvironmentVariable((\"user_id\"), responseJSON.id);",
+									"}",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1,\r\n  \"investor_name\": \"brand new one\",\r\n  \"investor_email\": \"brand@newone.net\",\r\n  \"photo\": null,\r\n  \"super_angel\": false,\r\n  \"balance\": 9505600,\r\n  \"city\": \"Aracaju\",\r\n  \"country\": \"Brasil\",\r\n  \"enterprise_id\": 1,\r\n  \"portfolio\": [2]\r\n}"
+						},
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/investors/1",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"investors",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Investor (actually deactivating instead)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2530fe5-a870-41c3-bada-781e945a4867",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access-token}}"
+							},
+							{
+								"key": "client",
+								"value": "{{client}}"
+							},
+							{
+								"key": "uid",
+								"value": "{{uid}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json+hateoas",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local_host}}/api/{{api_version}}/investors/3",
+							"host": [
+								"{{local_host}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"investors",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Folder criado para requisições de recursos de Investors para interagir com Enteprises",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "73fe764f-aeef-4f66-8d14-c41941c7b8ef",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "f9fc7824-3dc9-48d7-86d9-959ed5109277",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "hateas people test",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json+hateoas",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:51311/api/people",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "51311",
+					"path": [
+						"api",
+						"people"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d1832049-63c1-4033-849c-30bd7921b8cf",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "0fea6fc2-ca2b-41db-8695-b7c181b083d1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

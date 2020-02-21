@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20191222024932_InitialMigration.cs" />
+    <Compile Remove="Migrations\20191222024932_InitialMigration.Designer.cs" />
+    <Compile Remove="Migrations\20191222030105_LocationRequired.cs" />
+    <Compile Remove="Migrations\20191222030105_LocationRequired.Designer.cs" />
+    <Compile Remove="Migrations\20191222030421_EmailComplexTypeColumnRenamed.cs" />
+    <Compile Remove="Migrations\20191222030421_EmailComplexTypeColumnRenamed.Designer.cs" />
+    <Compile Remove="Migrations\20191222030623_TryinghasDataEnterpriseTypes.cs" />
+    <Compile Remove="Migrations\20191222030623_TryinghasDataEnterpriseTypes.Designer.cs" />
+    <Compile Remove="Migrations\20191222034924_tryingNewDb.cs" />
+    <Compile Remove="Migrations\20191222034924_tryingNewDb.Designer.cs" />
+    <Compile Remove="Migrations\20191222035645_tryingNewDb.cs" />
+    <Compile Remove="Migrations\20191222035645_tryingNewDb.Designer.cs" />
+    <Compile Remove="Migrations\20191222040204_tryingNewDb.cs" />
+    <Compile Remove="Migrations\20191222040204_tryingNewDb.Designer.cs" />
+    <Compile Remove="Migrations\20191222052942_tryingNewDb.cs" />
+    <Compile Remove="Migrations\20191222052942_tryingNewDb.Designer.cs" />
+    <Compile Remove="Migrations\20191222155537_RestartedBase.cs" />
+    <Compile Remove="Migrations\20191222155537_RestartedBase.Designer.cs" />
+    <Compile Remove="Migrations\20191222160439_RestartedBase.cs" />
+    <Compile Remove="Migrations\20191222160439_RestartedBase.Designer.cs" />
+    <Compile Remove="Migrations\20191222161432_Restarted.cs" />
+    <Compile Remove="Migrations\20191222161432_Restarted.Designer.cs" />
+    <Compile Remove="Migrations\20191222220338_Final.cs" />
+    <Compile Remove="Migrations\20191222220338_Final.Designer.cs" />
+    <Compile Remove="Migrations\20191222220534_Final.cs" />
+    <Compile Remove="Migrations\20191222220534_Final.Designer.cs" />
+    <Compile Remove="Migrations\20191222224450_Nullable_OwnerId.cs" />
+    <Compile Remove="Migrations\20191222224450_Nullable_OwnerId.Designer.cs" />
+    <Compile Remove="Migrations\20191222231128_Nullable_OwnedEnterpriseId.cs" />
+    <Compile Remove="Migrations\20191222231128_Nullable_OwnedEnterpriseId.Designer.cs" />
+    <Compile Remove="Migrations\20191222231508_Nullable_OwnedEnterpriseId.cs" />
+    <Compile Remove="Migrations\20191222231508_Nullable_OwnedEnterpriseId.Designer.cs" />
+    <Compile Remove="Migrations\20191222233241_FinalMigration.cs" />
+    <Compile Remove="Migrations\20191222233241_FinalMigration.Designer.cs" />
+    <Compile Remove="Migrations\20191228220541_Identity.cs" />
+    <Compile Remove="Migrations\20191228220541_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20200214052102_Long_To_Decimal_Money.cs" />
+    <Compile Remove="Migrations\20200214052102_Long_To_Decimal_Money.Designer.cs" />
+    <Compile Remove="Migrations\20200214055128_Long_To_Decimal_Money.cs" />
+    <Compile Remove="Migrations\20200214055128_Long_To_Decimal_Money.Designer.cs" />
+    <Compile Remove="Migrations\20200217234756_AuditFields_RemoveEmailComplexType_SeedInitialData.cs" />
+    <Compile Remove="Migrations\20200217234756_AuditFields_RemoveEmailComplexType_SeedInitialData.Designer.cs" />
+    <Compile Remove="Migrations\20200218011451_V2_Simplified_Models_DecimalMoneyValues_AuditFields.cs" />
+    <Compile Remove="Migrations\20200218011451_V2_Simplified_Models_DecimalMoneyValues_AuditFields.Designer.cs" />
+    <Compile Remove="Migrations\20200218012935_V2_Simplified_Models_DecimalMoneyValues_AuditFields.cs" />
+    <Compile Remove="Migrations\20200218012935_V2_Simplified_Models_DecimalMoneyValues_AuditFields.Designer.cs" />
+    <Compile Remove="Migrations\20200218013101_V2_Simplified_Models_DecimalMoneyValues_AuditFields.cs" />
+    <Compile Remove="Migrations\20200218013101_V2_Simplified_Models_DecimalMoneyValues_AuditFields.Designer.cs" />
+    <Compile Remove="Migrations\20200218014025_V2_Simplified_Models_DecimalMoneyValues_AuditFields.cs" />
+    <Compile Remove="Migrations\20200218014025_V2_Simplified_Models_DecimalMoneyValues_AuditFields.Designer.cs" />
+    <Compile Remove="Migrations\20200218041619_V2_Simplified_Models_DecimalMoneyValues_AuditFields.cs" />
+    <Compile Remove="Migrations\20200218041619_V2_Simplified_Models_DecimalMoneyValues_AuditFields.Designer.cs" />
+    <Compile Remove="Migrations\20200218041741_V2_Simplified_Models_DecimalMoneyValues_AuditFields.cs" />
+    <Compile Remove="Migrations\20200218041741_V2_Simplified_Models_DecimalMoneyValues_AuditFields.Designer.cs" />
+    <Compile Remove="Migrations\20200218042131_V2_Simplified_Models_DecimalMoneyValues_AuditFields.cs" />
+    <Compile Remove="Migrations\20200218042131_V2_Simplified_Models_DecimalMoneyValues_AuditFields.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+</Project>
