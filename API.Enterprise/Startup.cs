@@ -24,6 +24,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace API.Query
 {
@@ -45,13 +47,12 @@ namespace API.Query
 
                 // data access layer services
                 .AddDbContext<EnterpriseContext>(opts => {
-                    opts.UseSqlServer(Configuration.GetConnectionString("EnterpriseContext"));
+                    opts.UseSqlServer(Configuration.GetConnectionString(nameof(EnterpriseContext)));
                     // opts.EnableSensitiveDataLogging(); just for debugging mode
                 })
 
-                // query only operations base repos
-                .AddScoped<IQueryableRepository<Enterprise>, QueryableRepository<Enterprise>>()
-                .AddScoped<IQueryableRepository<Investor>, QueryableRepository<Investor>>()
+                // sql connection for dapper
+                .AddScoped<IDbConnection, SqlConnection>(provider => new SqlConnection(Configuration.GetConnectionString(nameof(EnterpriseContext))))
 
                 // query only repos
                 .AddScoped<IEnterpriseQueryRepository, EnterpriseQueryRepository>()

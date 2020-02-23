@@ -13,9 +13,8 @@ namespace Data.MapperProfiles
         {
             CreateMap<EnterpriseType, EnterpriseTypeOutput>();
 
+            CreateMap<List<Enterprise>, PortfolioOutput>();
             CreateMap<Enterprise, EnterpriseOutput>();
-            CreateMap<IReadOnlyList<Enterprise>, IReadOnlyList<EnterpriseOutput>>();
-            CreateMap<IReadOnlyList<Enterprise>, PortfolioOutput>();
 
             CreateMap<Investor, InvestorOutput>().IgnoreAllPropertiesWithAnInaccessibleSetter();
             CreateMap<Investor, SuccessSigninOutput>().IgnoreAllPropertiesWithAnInaccessibleSetter();

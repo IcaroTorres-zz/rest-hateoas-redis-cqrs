@@ -10,7 +10,6 @@ namespace Domain.DTOs.Investors.Inputs
         [FromQuery(Name = "investor_email")] public string Email { get; set; }
         [FromQuery(Name = "city")] public string City { get; set; }
         [FromQuery(Name = "country")] public string Country { get; set; }
-        [FromQuery(Name = "phone")] public string Phone { get; set; }
         [FromQuery(Name = "enterprise_id")] public long? EnterpriseId { get; set; }
         [FromQuery(Name = "balance")] public decimal? Balance { get; set; }
         [FromQuery(Name = "portfolio_value")] public decimal? PortfolioValue { get; set; }
