@@ -8,7 +8,7 @@ namespace Domain.DTOs.Enterprises.Inputs
         [FromQuery(Name = "name")] public string Name { get; set; }
         [FromQuery(Name = "photo")] public string Photo { get; set; }
         [FromQuery(Name = "description")] public string Description { get; set; }
-        [FromQuery(Name = "email_enterprise")] public string Email { get; set; }
+        [FromQuery(Name = "email")] public string Email { get; set; }
         [FromQuery(Name = "facebook")] public string Facebook { get; set; }
         [FromQuery(Name = "twitter")] public string Twitter { get; set; }
         [FromQuery(Name = "linkedin")] public string Linkedin { get; set; }
@@ -18,6 +18,6 @@ namespace Domain.DTOs.Enterprises.Inputs
         [FromQuery(Name = "country")] public string Country { get; set; }
         [FromQuery(Name = "value")] public decimal? Value { get; set; }
         [FromQuery(Name = "share_price")] public decimal? SharePrice { get; set; }
-        [FromQuery(Name = "enterprise_types")] public int? EnterpriseTypeId { get; set; }
+        [FromQuery(Name = "type_id")] public int? EnterpriseTypeId { get; set; }
     }
 }
