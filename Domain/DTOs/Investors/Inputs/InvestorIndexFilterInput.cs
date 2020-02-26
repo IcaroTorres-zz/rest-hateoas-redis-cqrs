@@ -7,7 +7,7 @@ namespace Domain.DTOs.Investors.Inputs
         [FromQuery(Name = "id")] public long? Id { get; set; }
         [FromQuery(Name = "name")] public string Name { get; set; }
         [FromQuery(Name = "photo")] public string Photo { get; set; }
-        [FromQuery(Name = "investor_email")] public string Email { get; set; }
+        [FromQuery(Name = "email")] public string Email { get; set; }
         [FromQuery(Name = "city")] public string City { get; set; }
         [FromQuery(Name = "country")] public string Country { get; set; }
         [FromQuery(Name = "enterprise_id")] public long? EnterpriseId { get; set; }

@@ -6,8 +6,8 @@ namespace Domain.DTOs.Investors.Inputs
 {
     public partial class CreateInvestorInput
     {
-        [Required, JsonProperty("investor_name")] public string Name { get; set; }
-        [Required, JsonProperty("investor_email")] public string Email { get; set; }
+        [Required, JsonProperty("name")] public string Name { get; set; }
+        [Required, JsonProperty("email")] public string Email { get; set; }
         [Required, JsonProperty("city")] public string City { get; set; }
         [Required, JsonProperty("country")] public string Country { get; set; }
         [Required, JsonProperty("super_angel")] public bool SuperAngel { get; set; }
