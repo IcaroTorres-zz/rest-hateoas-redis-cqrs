@@ -1,15 +1,12 @@
-﻿using Domain.DTOs.Enterprises.Outputs;
-using Domain.Entities;
-using Newtonsoft.Json;
-using System.Linq;
+﻿using Newtonsoft.Json;
 
 namespace Domain.DTOs.Investors.Outputs
 {
     public partial class InvestorOutput
     {
         [JsonProperty("id")] public long Id { get; set; }
-        [JsonProperty("investor_name")] public string Name { get; set; }
-        [JsonProperty("investor_email")] public string Email { get; set; }
+        [JsonProperty("name")] public string Name { get; set; }
+        [JsonProperty("email")] public string Email { get; set; }
         [JsonProperty("city")] public string City { get; set; }
         [JsonProperty("country")] public string Country { get; set; }
         [JsonProperty("portfolio_value")] public decimal PortfolioValue { get; set; }

@@ -6,7 +6,7 @@ namespace Domain.DTOs.Investors.Outputs
 {
     public partial class PortfolioOutput
     {
-        [JsonProperty("enterprises_number")]
+        [JsonProperty("count")]
         public long Count => Enterprises.Count;
 
         [JsonProperty("enterprises")]
