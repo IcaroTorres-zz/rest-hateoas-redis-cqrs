@@ -2,13 +2,14 @@
 using Domain.DTOs.Enterprises.Outputs;
 using Domain.Util;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Domain.Repositories.Query
 {
     public interface IEnterpriseQueryRepository
     {
-        EnterpriseOutput Get(long id);
-        IReadOnlyList<EnterpriseOutput> Query(EnterpriseIndexFilterInput filter);
+        Task<EnterpriseOutput> Get(long id);
+        Task<IReadOnlyList<EnterpriseOutput>> Query(EnterpriseIndexFilterInput filter);
         Pagination<EnterpriseOutput> Paginate(Pagination<EnterpriseOutput> pagination);
     }
 }
