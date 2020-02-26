@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.DTOs.Auth.Outputs;
 using Domain.DTOs.Enterprises.Outputs;
+using Domain.DTOs.EnterpriseTypes.Outputs;
 using Domain.DTOs.Investors.Outputs;
 using Domain.Entities;
 using System.Collections.Generic;
