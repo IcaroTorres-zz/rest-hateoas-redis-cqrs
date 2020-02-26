@@ -2,22 +2,23 @@
 using Domain.DTOs.Investors.Inputs;
 using Domain.Repositories.Query;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace API.Controllers.Queries
 {
-    [ApiController, Route("api/v2/investors"), CacheResponse(300)]
+    [ApiController, Route("api/v2/investors"), CacheResponse(30)]
     public class InvestorsController : ControllerBase
     {
         [HttpGet(Name = "get-investors")]
-        public IActionResult Get([FromQuery]InvestorIndexFilterInput input, [FromServices] IInvestorQueryRepository queryRepository)
+        public async Task<IActionResult> Get([FromQuery]InvestorIndexFilterInput input, [FromServices] IInvestorQueryRepository queryRepository)
         {
-            return Ok(queryRepository.Query(input));
+            return Ok(await queryRepository.Query(input));
         }
 
         [HttpGet("{id}", Name = "get-investor")]
-        public IActionResult Get(long id, [FromServices] IInvestorQueryRepository queryRepository)
+        public async Task<IActionResult> Get(long id, [FromServices] IInvestorQueryRepository queryRepository)
         {
-            return Ok(queryRepository.Get(id));
+            return Ok(await queryRepository.GetAsync(id));
         }
     }
 }

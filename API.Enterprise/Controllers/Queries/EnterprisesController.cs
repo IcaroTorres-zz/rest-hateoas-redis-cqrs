@@ -2,10 +2,11 @@
 using Domain.DTOs.Enterprises.Inputs;
 using Domain.Repositories.Query;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace API.Controllers.Queries
 {
-    [ApiController, Route("api/v2/enterprises"), CacheResponse(300)]
+    [ApiController, Route("api/v2/enterprises"), CacheResponse(30)]
     public class EnterprisesController : ControllerBase
     {
         private readonly IEnterpriseQueryRepository _queryRepository;
@@ -16,15 +17,15 @@ namespace API.Controllers.Queries
         }
 
         [HttpGet(Name = "get-enterprises")]
-        public IActionResult Get([FromQuery]EnterpriseIndexFilterInput input)
+        public async Task<IActionResult> Get([FromQuery]EnterpriseIndexFilterInput input)
         {
-            return Ok(_queryRepository.Query(input));
+            return Ok(await _queryRepository.Query(input));
         }
 
         [HttpGet("{id}", Name = "get-enterprise")]
-        public IActionResult Get(long id)
+        public async Task<IActionResult> Get(long id)
         {
-            return Ok(_queryRepository.Get(id));
+            return Ok(await _queryRepository.Get(id));
         }
     }
 }
