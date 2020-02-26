@@ -35,7 +35,7 @@ namespace API.Controllers.Commands
             return Ok(_service.UpdateInvestor(id, input));
         }
 
-        [HttpDelete("{id}", Name = "delete-investor")]
+        [HttpDelete("{id}", Name = "disable-investor")]
         public IActionResult Delete(long id)
         {
             _service.DeleteInvestor(id);
