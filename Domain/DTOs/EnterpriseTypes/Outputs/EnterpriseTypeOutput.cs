@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
 
-namespace Domain.DTOs.Enterprises.Outputs
+namespace Domain.DTOs.EnterpriseTypes.Outputs
 {
     public partial class EnterpriseTypeOutput
     {
         [JsonProperty("id")]
         public int Id { get; set; }
 
-        [JsonProperty("enterprise_type_name")]
+        [JsonProperty("name")]
         public string Name { get; set; }
     }
 }
