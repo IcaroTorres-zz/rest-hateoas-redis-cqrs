@@ -52,7 +52,8 @@ namespace API.Actionttributes
                 .OrderBy(q => q.Key)
                 .Aggregate(
                     new StringBuilder(),
-                    (orderedQueryBuilder, currentQueryStringPair) => {
+                    (orderedQueryBuilder, currentQueryStringPair) =>
+                    {
                         var previousFullValue = orderedQueryBuilder.Append(orderedQueryBuilder.Length > 0 ? "&" : "").ToString();
                         orderedQueryBuilder.Clear().Append($"{previousFullValue}{currentQueryStringPair.Key}={currentQueryStringPair.Value}");
                         return orderedQueryBuilder;
