@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using Domain.DTOs.EnterpriseTypes.Outputs;
 
 namespace API.Query
 {
@@ -48,7 +49,7 @@ namespace API.Query
                 // data access layer services
                 .AddDbContext<EnterpriseContext>(opts => {
                     opts.UseSqlServer(Configuration.GetConnectionString(nameof(EnterpriseContext)));
-                    // opts.EnableSensitiveDataLogging(); just for debugging mode
+                    opts.EnableSensitiveDataLogging(); //just for debugging mode
                 })
 
                 // sql connection for dapper
@@ -56,6 +57,7 @@ namespace API.Query
 
                 // query only repos
                 .AddScoped<IEnterpriseQueryRepository, EnterpriseQueryRepository>()
+                .AddScoped<IEnterpriseTypeQueryRepository, EnterpriseTypeQueryRepository>()
                 .AddScoped<IInvestorQueryRepository, InvestorQueryRepository>()
 
                 // command + query operations base repos
@@ -73,6 +75,7 @@ namespace API.Query
 
                 // application services
                 .AddScoped<IEnterpriseFacade, EnterpriseService>()
+                .AddScoped<IEnterpriseTypeFacade, EnterpriseTypeService>()
                 .AddScoped<IInvestorFacade, InvestorService>()
 
                 // automapper services and profiles
@@ -100,11 +103,18 @@ namespace API.Query
                     options.AddLink<EnterpriseOutput>("delete-enterprise", e => new { id = e.Id });
                     options.AddLink<EnterpriseOutput>("get-enterprises");
 
+                    options.AddLink<List<EnterpriseTypeOutput>>("create-enterprise-type");
+                    options.AddLink<EnterpriseTypeOutput>("get-enterprise-type", e => new { id = e.Id });
+                    options.AddLink<EnterpriseTypeOutput>("update-enterprise-type", e => new { id = e.Id });
+                    options.AddLink<EnterpriseTypeOutput>("update-enterprise-type-properties", e => new { id = e.Id });
+                    options.AddLink<EnterpriseTypeOutput>("disable-enterprise-type", e => new { id = e.Id });
+                    options.AddLink<EnterpriseTypeOutput>("get-enterprise-types");
+
                     options.AddLink<List<InvestorOutput>>("create-investor");
                     options.AddLink<InvestorOutput>("get-investor", e => new { id = e.Id });
                     options.AddLink<InvestorOutput>("update-investor", e => new { id = e.Id });
                     options.AddLink<InvestorOutput>("update-investor-properties", e => new { id = e.Id });
-                    options.AddLink<InvestorOutput>("delete-investor", e => new { id = e.Id });
+                    options.AddLink<InvestorOutput>("disable-investor", e => new { id = e.Id });
                     options.AddLink<InvestorOutput>("get-investors");
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
