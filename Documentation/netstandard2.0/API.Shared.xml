@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>API.Shared</name>
+    </assembly>
+    <members>
+        <member name="T:API.Middleware.ExceptionMiddleware">
+            <summary>
+            Classe global para tratamento de erros
+            </summary>
+        </member>
+        <member name="M:API.Middleware.ExceptionMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            Construtor
+            </summary>
+            <param name="requestDelegate"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:API.Middleware.ExceptionMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Global try-catch
+            </summary>
+            <param name="httpContext"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
