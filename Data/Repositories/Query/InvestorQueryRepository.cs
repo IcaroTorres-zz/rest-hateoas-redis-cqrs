@@ -11,6 +11,7 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Data.Repositories.Query
 {
@@ -20,6 +21,11 @@ namespace Data.Repositories.Query
         private readonly string _schema;
         private readonly IDbConnection _connection;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="mapper"></param>
         public InvestorQueryRepository(IDbConnection connection, IMapper mapper)
         {
             _connection = connection;
@@ -27,46 +33,60 @@ namespace Data.Repositories.Query
             _schema = "[dbo]";
         }
 
-        public InvestorOutput Get(long id)
+        /// <summary>
+        /// Get an active Investor by Id with Its active enterprises for theirs active enterprise types associated
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<InvestorOutput> GetAsync(long id)
         {
             _connection.Open();
             using var conn = _connection;
-            var sqlBuilder = new StringBuilder(GetRequiredSqlQuery()).Append($"and ([I].{nameof(Investor.Id)} = @{nameof(Investor.Id)})");
-            var sql = sqlBuilder.ToString();
-            var investor = conn.Query(sql, GetLambdaFunction(), new { Id = id })
+            var sqlBuilder = new StringBuilder(GenerateBaseSqlQuery())
+                .Append($"AND ([I].{nameof(Investor.Id)} = @{nameof(Investor.Id)})");
+            var investor = (await conn.QueryAsync(sqlBuilder.ToString(), GetLambdaFunction(), new { Id = id }))
                 .SingleOrDefault() ?? throw new ApiException(HttpStatusCode.NotFound, "Not Found");
+            if (!investor.Active)
+            {
+                throw new ApiException(HttpStatusCode.Gone, "Gone! Resource item disabled");
+            }
 
             return _mapper.Map<InvestorOutput>(investor);
         }
 
-        public IReadOnlyList<InvestorOutput> Query(InvestorIndexFilterInput filter)
+        /// <summary>
+        /// Query active Investors with Its active enterprises for theirs active enterprise types associated
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public async Task<IReadOnlyList<InvestorOutput>> Query(InvestorIndexFilterInput filter)
         {
             _connection.Open();
             using var conn = _connection;
-            var sqlBuilder = new StringBuilder(GetRequiredSqlQuery())
-                .Append($"(@{ nameof(filter.Name)} IS NULL OR [I].{nameof(Investor.Name)} = @{nameof(filter.Name)})")
-                .Append($"AND (@{nameof(filter.Id)} IS NULL OR [I].{nameof(Investor.Id)} = @{nameof(filter.Id)})")
-                .Append($"AND (@{nameof(filter.PortfolioValue)} IS NULL OR [I].{nameof(Investor.PortfolioValue)} = @{nameof(filter.PortfolioValue)})")
-                .Append($"AND (@{nameof(filter.Balance)} IS NULL OR [I].{nameof(Investor.Balance)} = @{nameof(filter.Balance)})")
-                .Append($"AND (@{nameof(filter.EnterpriseId)} IS NULL OR [I].{nameof(Investor.EnterpriseId)} = @{nameof(filter.EnterpriseId)})")
-                .Append($"AND (@{nameof(filter.Email)} IS NULL OR [I].{nameof(Investor.Email)} = @{nameof(filter.Email)})")
-                .Append($"AND (@{nameof(filter.City)} IS NULL OR [I].{nameof(Investor.City)} = @{nameof(filter.City)})")
-                .Append($"AND (@{nameof(filter.Country)} IS NULL OR [I].{nameof(Investor.Country)} = @{nameof(filter.Country)})")
-                .Append($"AND (@{nameof(filter.SuperAngel)} IS NULL OR [I].{nameof(Investor.SuperAngel)} = @{nameof(filter.SuperAngel)})")
-                .Append($"AND (@{nameof(filter.FirstAccess)} IS NULL OR [I].{nameof(Investor.FirstAccess)} = @{nameof(filter.FirstAccess)})");
-            var sql = sqlBuilder.ToString();
-            var investors = conn.Query(sql.ToString(), GetLambdaFunction(), filter).ToList();
-            return _mapper.Map<List<InvestorOutput>>(investors);
+            var sqlBuilder = new StringBuilder(GenerateBaseSqlQuery())
+                .Append($"AND [I].{nameof(Investor.Active)} = 1 ")
+                .Append($"AND (@{ nameof(filter.Name)} IS NULL OR [I].{nameof(Investor.Name)} = @{nameof(filter.Name)}) ")
+                .Append($"AND (@{nameof(filter.Id)} IS NULL OR [I].{nameof(Investor.Id)} = @{nameof(filter.Id)}) ")
+                .Append($"AND (@{nameof(filter.PortfolioValue)} IS NULL OR [I].{nameof(Investor.PortfolioValue)} = @{nameof(filter.PortfolioValue)}) ")
+                .Append($"AND (@{nameof(filter.Balance)} IS NULL OR [I].{nameof(Investor.Balance)} = @{nameof(filter.Balance)}) ")
+                .Append($"AND (@{nameof(filter.EnterpriseId)} IS NULL OR [I].{nameof(Investor.EnterpriseId)} = @{nameof(filter.EnterpriseId)}) ")
+                .Append($"AND (@{nameof(filter.Email)} IS NULL OR [I].{nameof(Investor.Email)} = @{nameof(filter.Email)}) ")
+                .Append($"AND (@{nameof(filter.City)} IS NULL OR [I].{nameof(Investor.City)} = @{nameof(filter.City)}) ")
+                .Append($"AND (@{nameof(filter.Country)} IS NULL OR [I].{nameof(Investor.Country)} = @{nameof(filter.Country)}) ")
+                .Append($"AND (@{nameof(filter.SuperAngel)} IS NULL OR [I].{nameof(Investor.SuperAngel)} = @{nameof(filter.SuperAngel)}) ")
+                .Append($"AND (@{nameof(filter.FirstAccess)} IS NULL OR [I].{nameof(Investor.FirstAccess)} = @{nameof(filter.FirstAccess)}) ");
+            var investors = await conn.QueryAsync(sqlBuilder.ToString(), GetLambdaFunction(), filter);
+            return _mapper.Map<IReadOnlyList<InvestorOutput>>(investors);
         }
 
-        private string GetRequiredSqlQuery()
+        private string GenerateBaseSqlQuery()
         {
             return @$"SELECT [I].*, [E].Id, [E].Name, [E].EnterpriseTypeId, [E].Active, [E].Value, [T].*, [IE].* 
                 FROM {_schema}.{nameof(Investor)}s [I]
                 JOIN {_schema}.{nameof(InvestorEnterprise)} [IE] ON [IE].InvestorId = [I].Id
                 JOIN {_schema}.{nameof(Enterprise)}s [E] ON [IE].EnterpriseId = [E].Id
                 JOIN {_schema}.{nameof(EnterpriseType)}s [T] ON [E].EnterpriseTypeId = [T].Id
-                WHERE ([I].{nameof(Investor.Active)} = 1 AND [E].{nameof(Enterprise.Active)} = 1 AND [T].{nameof(EnterpriseType.Active)} = 1)";
+                WHERE ([E].{nameof(Enterprise.Active)} = 1 AND [T].{nameof(EnterpriseType.Active)} = 1) ";
         }
 
         private Func<Investor, List<InvestorEnterprise>, List<Enterprise>, List<EnterpriseType>, Investor> GetLambdaFunction()
@@ -85,7 +105,11 @@ namespace Data.Repositories.Query
             };
         }
 
-
+        /// <summary>
+        /// Paginates
+        /// </summary>
+        /// <param name="pagination"></param>
+        /// <returns></returns>
         public Pagination<InvestorOutput> Paginate(Pagination<InvestorOutput> pagination)
         {
             //pagination.Items = _baseRepository.Paginate(new Pagination<Investor>

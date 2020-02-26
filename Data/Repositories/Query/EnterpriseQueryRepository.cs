@@ -11,6 +11,7 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Data.Repositories.Query
 {
@@ -27,19 +28,19 @@ namespace Data.Repositories.Query
             _schema = "[dbo]";
         }
 
-        public EnterpriseOutput Get(long id)
+        public async Task<EnterpriseOutput> Get(long id)
         {
             _connection.Open();
             using var conn = _connection;
             var sqlBuilder = new StringBuilder(GetRequiredSqlQuery()).Append($"AND [E].{nameof(Enterprise.Id)} = @{nameof(Enterprise.Id)}");
             var sql = sqlBuilder.ToString();
-            var enterprise = conn.Query(sql, GetLambdaFunction(), new { Id = id })
+            var enterprise = (await conn.QueryAsync(sql, GetLambdaFunction(), new { Id = id }))
                 .SingleOrDefault() ?? throw new ApiException(HttpStatusCode.NotFound, "Not Found");
 
             return _mapper.Map<EnterpriseOutput>(enterprise);
         }
 
-        public IReadOnlyList<EnterpriseOutput> Query(EnterpriseIndexFilterInput filter)
+        public async Task<IReadOnlyList<EnterpriseOutput>> Query(EnterpriseIndexFilterInput filter)
         {
             _connection.Open();
             using var conn = _connection;
@@ -56,9 +57,8 @@ namespace Data.Repositories.Query
                 .Append($"AND (@{nameof(filter.Value)} IS NULL OR [E].{nameof(Enterprise.Value)} = @{nameof(filter.Value)})")
                 .Append($"AND (@{nameof(filter.Id)} IS NULL OR [E].{nameof(Enterprise.Id)} = @{nameof(filter.Id)})")
                 .Append($"AND (@{nameof(filter.OwnEnterprise)} IS NULL OR [E].{nameof(Enterprise.OwnEnterprise)} = @{nameof(filter.OwnEnterprise)})");
-            var sql = sqlBuilder.ToString();
-            var enterprises = conn.Query(sql, GetLambdaFunction(), filter).ToList();
-            var output = _mapper.Map<List<EnterpriseOutput>>(enterprises);
+            var enterprises = await conn.QueryAsync(sqlBuilder.ToString(), GetLambdaFunction(), filter);
+            var output = _mapper.Map<IReadOnlyList<EnterpriseOutput>>(enterprises);
 
             return output;
         }
