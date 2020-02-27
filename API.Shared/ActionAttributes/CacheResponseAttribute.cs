@@ -48,17 +48,27 @@ namespace API.Actionttributes
 
         private static string GenerateCacheKeyFromRequest(HttpRequest request)
         {
-            return request.Query
-                .OrderBy(q => q.Key)
-                .Aggregate(
-                    new StringBuilder(),
-                    (orderedQueryBuilder, currentQueryStringPair) =>
-                    {
-                        var previousFullValue = orderedQueryBuilder.Append(orderedQueryBuilder.Length > 0 ? "&" : "").ToString();
-                        orderedQueryBuilder.Clear().Append($"{previousFullValue}{currentQueryStringPair.Key}={currentQueryStringPair.Value}");
-                        return orderedQueryBuilder;
-                    }, orderedQueryBuilder => orderedQueryBuilder.Insert(0, $"{request.Path}{(orderedQueryBuilder.Length > 0 ? "?" : "")}"))
-                .ToString();
+            var cacheKeyBuilder = new StringBuilder(request.Path);
+
+            if (request.Query.Any())
+            {
+                cacheKeyBuilder = request.Query
+                    .OrderBy(q => q.Key)
+                    .Aggregate(
+                        cacheKeyBuilder,
+                        (orderedQueryBuilder, currentQueryStringPair) =>
+                        {
+                            var previousFullValue = orderedQueryBuilder.Append(orderedQueryBuilder.ToString() == request.Path.ToString() ? "?" : "&").ToString();
+                            orderedQueryBuilder.Clear().Append($"{previousFullValue}{currentQueryStringPair.Key}={currentQueryStringPair.Value}");
+                            return orderedQueryBuilder;
+                        });
+            }
+
+            cacheKeyBuilder = request.Headers
+                .Where(header => !string.IsNullOrWhiteSpace(header.Value))
+                .Aggregate(cacheKeyBuilder, (headerBuilder, header) => headerBuilder.Append($"|{header.Key}={header.Value}"));
+
+            return cacheKeyBuilder.ToString();
         }
     }
 }
