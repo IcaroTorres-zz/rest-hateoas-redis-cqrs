@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Domain.DTOs.Investors.Outputs;
+using Domain.Util;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Domain.DTOs.Investors.Inputs
 {
-    public partial class InvestorIndexFilterInput
+    public partial class InvestorPagination : Pagination<InvestorOutput>
     {
         [FromQuery(Name = "id")] public long? Id { get; set; }
         [FromQuery(Name = "name")] public string Name { get; set; }

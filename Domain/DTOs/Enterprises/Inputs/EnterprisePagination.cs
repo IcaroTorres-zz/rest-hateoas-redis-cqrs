@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Domain.DTOs.Enterprises.Outputs;
+using Domain.Util;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Domain.DTOs.Enterprises.Inputs
 {
-    public partial class EnterpriseIndexFilterInput
+    public partial class EnterprisePagination : Pagination<EnterpriseOutput>
     {
         [FromQuery(Name = "id")] public long? Id { get; set; }
         [FromQuery(Name = "name")] public string Name { get; set; }

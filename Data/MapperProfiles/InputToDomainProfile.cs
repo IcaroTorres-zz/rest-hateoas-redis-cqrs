@@ -13,14 +13,14 @@ namespace Data.MapperProfiles
     {
         public InputToDomainProfile()
         {
-            CreateMap<EnterpriseIndexFilterInput, Enterprise>();
+            CreateMap<EnterprisePagination, Enterprise>();
             CreateMap<CreateEnterpriseInput, Enterprise>();
             CreateMap<UpdateEnterpriseInput, Enterprise>();
 
             CreateMap<UpdateEnterpriseTypeInput, EnterpriseType>();
             CreateMap<OverwriteEnterpriseTypeInput, EnterpriseType>();
 
-            CreateMap<InvestorIndexFilterInput, Investor>();
+            CreateMap<InvestorPagination, Investor>();
             CreateMap<CreateInvestorInput, Investor>().IgnoreAllPropertiesWithAnInaccessibleSetter();
             CreateMap<OverwriteInvestorInput, Investor>().IgnoreAllPropertiesWithAnInaccessibleSetter();
             CreateMap<JsonPatchDocument<UpdateInvestorInput>, JsonPatchDocument<Investor>>();
