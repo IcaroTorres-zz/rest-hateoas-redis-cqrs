@@ -83,7 +83,7 @@ namespace Data.Repositories
         {
             var query = GetAll(readOnly: true);
 
-            pagination.Length = query.Count();
+            pagination.TotalItems = query.Count();
 
             pagination.Items = query
                 .Skip((pagination.Page - 1) * pagination.PageLength)
