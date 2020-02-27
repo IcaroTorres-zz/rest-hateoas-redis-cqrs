@@ -43,7 +43,7 @@ namespace Data.Repositories.Query
             _connection.Open();
             using var conn = _connection;
             var sqlBuilder = new StringBuilder(GenerateBaseSqlQuery())
-                .Append($"AND ([I].{nameof(Investor.Id)} = @{nameof(Investor.Id)})");
+                .AppendLine($"AND ([I].{nameof(Investor.Id)} = @{nameof(Investor.Id)})");
             var investor = (await conn.QueryAsync(sqlBuilder.ToString(), GetLambdaFunction(), new { Id = id }))
                 .SingleOrDefault() ?? throw new ApiException(HttpStatusCode.NotFound, "Not Found");
             if (!investor.Active)
@@ -57,36 +57,46 @@ namespace Data.Repositories.Query
         /// <summary>
         /// Query active Investors with Its active enterprises for theirs active enterprise types associated
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="pagination"></param>
         /// <returns></returns>
-        public async Task<IReadOnlyList<InvestorOutput>> Query(InvestorIndexFilterInput filter)
+        public async Task<InvestorPagination> Query(InvestorPagination pagination)
         {
             _connection.Open();
             using var conn = _connection;
             var sqlBuilder = new StringBuilder(GenerateBaseSqlQuery())
-                .Append($"AND [I].{nameof(Investor.Active)} = 1 ")
-                .Append($"AND (@{ nameof(filter.Name)} IS NULL OR [I].{nameof(Investor.Name)} = @{nameof(filter.Name)}) ")
-                .Append($"AND (@{nameof(filter.Id)} IS NULL OR [I].{nameof(Investor.Id)} = @{nameof(filter.Id)}) ")
-                .Append($"AND (@{nameof(filter.PortfolioValue)} IS NULL OR [I].{nameof(Investor.PortfolioValue)} = @{nameof(filter.PortfolioValue)}) ")
-                .Append($"AND (@{nameof(filter.Balance)} IS NULL OR [I].{nameof(Investor.Balance)} = @{nameof(filter.Balance)}) ")
-                .Append($"AND (@{nameof(filter.EnterpriseId)} IS NULL OR [I].{nameof(Investor.EnterpriseId)} = @{nameof(filter.EnterpriseId)}) ")
-                .Append($"AND (@{nameof(filter.Email)} IS NULL OR [I].{nameof(Investor.Email)} = @{nameof(filter.Email)}) ")
-                .Append($"AND (@{nameof(filter.City)} IS NULL OR [I].{nameof(Investor.City)} = @{nameof(filter.City)}) ")
-                .Append($"AND (@{nameof(filter.Country)} IS NULL OR [I].{nameof(Investor.Country)} = @{nameof(filter.Country)}) ")
-                .Append($"AND (@{nameof(filter.SuperAngel)} IS NULL OR [I].{nameof(Investor.SuperAngel)} = @{nameof(filter.SuperAngel)}) ")
-                .Append($"AND (@{nameof(filter.FirstAccess)} IS NULL OR [I].{nameof(Investor.FirstAccess)} = @{nameof(filter.FirstAccess)}) ");
-            var investors = await conn.QueryAsync(sqlBuilder.ToString(), GetLambdaFunction(), filter);
-            return _mapper.Map<IReadOnlyList<InvestorOutput>>(investors);
+                .AppendLine(string.Format("AND [I].{0} = 1 ", nameof(Investor.Active)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Name), nameof(Investor.Name), nameof(pagination.Name)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Id), nameof(Investor.Id), nameof(pagination.Id)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.PortfolioValue), nameof(Investor.PortfolioValue), nameof(pagination.PortfolioValue)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Balance), nameof(Investor.Balance), nameof(pagination.Balance)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.EnterpriseId), nameof(Investor.EnterpriseId), nameof(pagination.EnterpriseId)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Email), nameof(Investor.Email), nameof(pagination.Email)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.City), nameof(Investor.City), nameof(pagination.City)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Country), nameof(Investor.Country), nameof(pagination.Country)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.FirstAccess), nameof(Investor.FirstAccess), nameof(pagination.FirstAccess)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.SuperAngel), nameof(Investor.SuperAngel), nameof(pagination.SuperAngel)))
+                .AppendLine(string.Format("ORDER BY {0} {1} ", pagination.GenerateOrderBy(), pagination.Order))
+                .AppendLine(string.Format("OFFSET @{0} ROWS FETCH NEXT @{1} ROWS ONLY;", nameof(pagination.Skip), nameof(pagination.PageLength))).ToString();
+
+            var investors = await conn.QueryAsync(sqlBuilder.ToString(), GetLambdaFunction(), pagination);
+            pagination.Items = _mapper.Map<IReadOnlyList<InvestorOutput>>(investors);
+
+            var sqlCountQuery = GetCountSqlQuery(pagination);
+            var TotalItems = (await conn.QueryAsync<int>(sqlCountQuery, pagination)).SingleOrDefault();
+            pagination.TotalItems = TotalItems;
+
+            return pagination;
         }
 
         private string GenerateBaseSqlQuery()
         {
-            return @$"SELECT [I].*, [E].Id, [E].Name, [E].EnterpriseTypeId, [E].Active, [E].Value, [T].*, [IE].* 
-                FROM {_schema}.{nameof(Investor)}s [I]
-                JOIN {_schema}.{nameof(InvestorEnterprise)} [IE] ON [IE].InvestorId = [I].Id
-                JOIN {_schema}.{nameof(Enterprise)}s [E] ON [IE].EnterpriseId = [E].Id
-                JOIN {_schema}.{nameof(EnterpriseType)}s [T] ON [E].EnterpriseTypeId = [T].Id
-                WHERE ([E].{nameof(Enterprise.Active)} = 1 AND [T].{nameof(EnterpriseType.Active)} = 1) ";
+            return new StringBuilder(string.Format("SELECT [I].*, [E].{0}, [E].{1}, [E].{2}, [E].{3}, [E].{4}, [T].*, [IE].* ", 
+                nameof(Enterprise.Id), nameof(Enterprise.Name), nameof(Enterprise.EnterpriseTypeId), nameof(Enterprise.Active), nameof(Enterprise.Value)))
+                .AppendLine(string.Format("FROM {0}.{1}s [I]", _schema, nameof(Investor)))
+                .AppendLine(string.Format("JOIN {0}.{1} [IE] ON [IE].{2} = [I].{3}", _schema, nameof(InvestorEnterprise), nameof(InvestorEnterprise.InvestorId), nameof(Investor.Id)))
+                .AppendLine(string.Format("JOIN {0}.{1}s [E] ON [IE].{2} = [E].{3}", _schema, nameof(Enterprise), nameof(InvestorEnterprise.EnterpriseId), nameof(Enterprise.Id)))
+                .AppendLine(string.Format("JOIN {0}.{1}s [T] ON [E].{2} = [T].{3})", _schema, nameof(EnterpriseType), nameof(Enterprise.EnterpriseTypeId), nameof(EnterpriseType.Id)))
+                .AppendLine(string.Format("WHERE ([E].{0} = 1 AND [T].{1} = 1) ", nameof(Enterprise.Active), nameof(EnterpriseType.Active))).ToString();
         }
 
         private Func<Investor, List<InvestorEnterprise>, List<Enterprise>, List<EnterpriseType>, Investor> GetLambdaFunction()
@@ -105,29 +115,25 @@ namespace Data.Repositories.Query
             };
         }
 
-        /// <summary>
-        /// Paginates
-        /// </summary>
-        /// <param name="pagination"></param>
-        /// <returns></returns>
-        public Pagination<InvestorOutput> Paginate(Pagination<InvestorOutput> pagination)
+        private string GetCountSqlQuery(InvestorPagination pagination)
         {
-            //pagination.Items = _baseRepository.Paginate(new Pagination<Investor>
-            //{
-            //    Page = pagination.Page,
-            //    PageLength = pagination.PageLength,
-            //    Term = pagination.Term,
-            //    Order = pagination.Order,
-            //    Column = pagination.Column,
-            //    TotalInPage = pagination.TotalInPage,
-            //    Total = pagination.Total,
-            //    Items = new List<Investor>(),
-            //    Length = pagination.Length
-            //}).Items
-            //.AsQueryable()
-            //.ProjectTo<InvestorOutput>(_mapper.ConfigurationProvider).ToList();
+            var sqlBuilder = new StringBuilder(string.Format("SELECT COUNT([I].*) FROM {0}.{1}s [I] ", _schema, nameof(InvestorEnterprise)))
+                .AppendLine(string.Format("JOIN {0}.{1} [IE] ON [IE].InvestorId = [I].Id ", _schema, nameof(InvestorEnterprise)))
+                .AppendLine(string.Format("JOIN {0}.{1}s [E] ON [IE].EnterpriseId = [E].Id ", _schema, nameof(Enterprise)))
+                .AppendLine(string.Format("JOIN {0}.{1}s [T] ON [E].EnterpriseTypeId = [T].Id ", _schema, nameof(EnterpriseType)))
+                .AppendLine(string.Format("WHERE ([E].{0} = 1 AND [T].{1} = 1) AND [I].{2} = 1 ", nameof(Enterprise.Active), nameof(EnterpriseType.Active), nameof(Investor.Active)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Name), nameof(Investor.Name), nameof(pagination.Name)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Id), nameof(Investor.Id), nameof(pagination.Id)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.PortfolioValue), nameof(Investor.PortfolioValue), nameof(pagination.PortfolioValue)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Balance), nameof(Investor.Balance), nameof(pagination.Balance)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.EnterpriseId), nameof(Investor.EnterpriseId), nameof(pagination.EnterpriseId)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Email), nameof(Investor.Email), nameof(pagination.Email)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.City), nameof(Investor.City), nameof(pagination.City)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.Country), nameof(Investor.Country), nameof(pagination.Country)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.FirstAccess), nameof(Investor.FirstAccess), nameof(pagination.FirstAccess)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR [E].{1} = @{2}) ", nameof(pagination.SuperAngel), nameof(Investor.SuperAngel), nameof(pagination.SuperAngel)));
 
-            return pagination;
+            return sqlBuilder.ToString();
         }
     }
 }

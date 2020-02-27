@@ -5,6 +5,8 @@ using Domain.DTOs.EnterpriseTypes.Outputs;
 using Domain.Entities;
 using Domain.Repositories.Query;
 using Domain.Util;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -31,9 +33,13 @@ namespace Data.Repositories.Query
         {
             _connection.Open();
             using var conn = _connection;
-            var sqlBuilder = new StringBuilder(GetRequiredSqlQuery()).Append($"WHERE {nameof(EnterpriseType.Id)} = @{nameof(EnterpriseType.Id)}");
-            var sql = sqlBuilder.ToString();
-            var enterpriseType = (await conn.QueryAsync<EnterpriseType>(sql, new { Id = id })).SingleOrDefault() ?? throw new ApiException(HttpStatusCode.NotFound, "Not Found");
+
+            var sqlGetQuery = new StringBuilder(GetRequiredSqlQuery())
+                .AppendLine(string.Format("WHERE {0} = @{1}", nameof(EnterpriseType.Id), nameof(EnterpriseType.Id))).ToString();
+
+            var enterpriseType = (await conn.QueryAsync<EnterpriseType>(sqlGetQuery, new { Id = id }))
+                .SingleOrDefault() ?? throw new ApiException(HttpStatusCode.NotFound, "Not Found");
+
             if (!enterpriseType.Active)
             {
                 throw new ApiException(HttpStatusCode.Gone, "Gone! Resource item disabled");
@@ -42,42 +48,39 @@ namespace Data.Repositories.Query
             return _mapper.Map<EnterpriseTypeOutput>(enterpriseType);
         }
 
-        public async Task<IReadOnlyList<EnterpriseTypeOutput>> Query(EnterpriseTypeIndexFilterInput filter)
+        // template query "SELECT * FROM {0} ORDER BY {1] OFFSET {2} ROWS FETCH NEXT {3} ROWS ONLY;";
+        public async Task<EnterpriseTypePagination> Query(EnterpriseTypePagination pagination)
         {
             _connection.Open();
             using var conn = _connection;
-            var sqlBuilder = new StringBuilder(GetRequiredSqlQuery())
-                .Append($"WHERE ({nameof(EnterpriseType.Active)} = 1) ")
-                .Append($"AND (@{nameof(filter.NameWith)} IS NULL OR {nameof(EnterpriseType.Name)} LIKE '%' + @{nameof(filter.NameWith)} + '%')");
-            var enterpriseTypes = await conn.QueryAsync<EnterpriseType>(sqlBuilder.ToString(), filter);
-            var output = _mapper.Map<IReadOnlyList<EnterpriseTypeOutput>>(enterpriseTypes);
+            var sqlPaginationQuery = new StringBuilder(GetRequiredSqlQuery())
+                .AppendLine(string.Format("WHERE ({0} = 1) ", nameof(EnterpriseType.Active)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR {1} LIKE '%' + @{2} + '%') ", nameof(pagination.Name), nameof(EnterpriseType.Name), nameof(pagination.Name)))
+                .AppendLine(string.Format("ORDER BY {0} {1} ", pagination.GenerateOrderBy(), pagination.Order))
+                .AppendLine(string.Format("OFFSET @{0} ROWS FETCH NEXT @{1} ROWS ONLY;", nameof(pagination.Skip), nameof(pagination.PageLength))).ToString();
 
-            return output;
-        }
+            var enterpriseTypes = await conn.QueryAsync<EnterpriseType>(sqlPaginationQuery, pagination);
+            pagination. Items = _mapper.Map<IReadOnlyList<EnterpriseTypeOutput>>(enterpriseTypes);
 
-        public Pagination<EnterpriseTypeOutput> Paginate(Pagination<EnterpriseTypeOutput> pagination)
-        {
-            //pagination.Items = _baseRepository.Paginate(new Pagination<Enterprise>
-            //{
-            //    Page = pagination.Page,
-            //    PageLength = pagination.PageLength,
-            //    Term = pagination.Term,
-            //    Order = pagination.Order,
-            //    Column = pagination.Column,
-            //    TotalInPage = pagination.TotalInPage,
-            //    Total = pagination.Total,
-            //    Items = new List<Enterprise>(),
-            //    Length = pagination.Length
-            //}).Items
-            //.AsQueryable()
-            //.ProjectTo<EnterpriseOutput>(_mapper.ConfigurationProvider).ToList();
+            var sqlCountQuery = GetCountSqlQuery(pagination);
+            var totalItems = (await conn.QueryAsync<int>(sqlCountQuery, pagination)).SingleOrDefault();
+            pagination.TotalItems = totalItems;
 
             return pagination;
         }
 
         private string GetRequiredSqlQuery()
         {
-            return @$"SELECT * FROM {_schema}.{nameof(EnterpriseType)}s ";
+            return string.Format("SELECT * FROM {0}.{1}s ", _schema, nameof(EnterpriseType));
+        }
+
+        private string GetCountSqlQuery(EnterpriseTypePagination pagination)
+        {
+            var sqlBuilder = new StringBuilder(string.Format("SELECT COUNT(*) as count_items FROM {0}.{1}s ", _schema, nameof(EnterpriseType)))
+                .AppendLine(string.Format("WHERE ({0} = 1) ", nameof(EnterpriseType.Active)))
+                .AppendLine(string.Format("AND (@{0} IS NULL OR {1} LIKE '%' + @{2} + '%') ", nameof(pagination.Name), nameof(EnterpriseType.Name), nameof(pagination.Name)));
+
+            return sqlBuilder.ToString();
         }
     }
 }
