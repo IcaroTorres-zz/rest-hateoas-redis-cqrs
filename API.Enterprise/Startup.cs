@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using API.Cache;
+﻿using API.Cache;
 using API.Hateoas;
 using API.Middleware;
+using AutoMapper;
 using Data.Context;
 using Data.MapperProfiles;
 using Data.Repositories;
@@ -9,13 +9,13 @@ using Data.Repositories.Command;
 using Data.Repositories.Query;
 using Data.Unities;
 using Domain.DTOs.Enterprises.Outputs;
+using Domain.DTOs.EnterpriseTypes.Outputs;
 using Domain.DTOs.Investors.Outputs;
 using Domain.Entities;
 using Domain.Repositories;
 using Domain.Repositories.Command;
 using Domain.Repositories.Query;
 using Domain.Unities;
-using Services.ApplicationServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -23,10 +23,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Services.ApplicationServices;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using Domain.DTOs.EnterpriseTypes.Outputs;
 
 namespace API.Query
 {
@@ -47,7 +47,8 @@ namespace API.Query
                 .AddHttpContextAccessor()
 
                 // data access layer services
-                .AddDbContext<EnterpriseContext>(opts => {
+                .AddDbContext<EnterpriseContext>(opts =>
+                {
                     opts.UseSqlServer(Configuration.GetConnectionString(nameof(EnterpriseContext)));
                     opts.EnableSensitiveDataLogging(); //just for debugging mode
                 })
