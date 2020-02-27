@@ -1,4 +1,4 @@
 ﻿namespace Domain.Enums
 {
-    public enum Orderby { ascending, descending }
+    public enum Orderby { ASC, DESC }
 }
