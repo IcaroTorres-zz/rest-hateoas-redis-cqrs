@@ -17,7 +17,7 @@ namespace API.Controllers.Queries
         }
 
         [HttpGet(Name = "get-enterprises")]
-        public async Task<IActionResult> Get([FromQuery]EnterpriseIndexFilterInput input)
+        public async Task<IActionResult> Get([FromQuery]EnterprisePagination input)
         {
             return Ok(await _queryRepository.Query(input));
         }
